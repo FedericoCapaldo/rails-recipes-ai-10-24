@@ -55,6 +55,8 @@ gem "font-awesome-sass", "~> 6.1"
 gem "simple_form", github: "heartcombo/simple_form"
 gem "solid_cache"
 gem "solid_queue"
+gem "mission_control-jobs"
+
 
 gem "sassc-rails"
 
