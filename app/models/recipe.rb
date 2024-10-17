@@ -4,7 +4,6 @@ class Recipe < ApplicationRecord
   has_one_attached :photo
   after_save if: -> { saved_change_to_name? || saved_change_to_ingredients? } do
     set_content
-    set_photo
   end
 
   # VERSION WITH CACHING
@@ -36,20 +35,7 @@ class Recipe < ApplicationRecord
   private
 
   def set_content
-    client = OpenAI::Client.new
-    response = client.chat(parameters: {
-      model: "gpt-4o-mini",
-      messages: [{
-        role: "user",
-        content: "Give me a simple recipe for #{name} with the ingredients #{ingredients}.
-                  Give me only the text of the recipe, without any of your own answer
-                  like 'Here is a simple recipe'."}]
-    })
-
-    new_content = response["choices"][0]["message"]["content"]
-
-    update(content: new_content)
-    return new_content
+    RecipeContentJob.perform_later(self)
   end
 
   def set_photo
